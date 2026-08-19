@@ -15,6 +15,11 @@ name: OpenWrt Builder
 on:
   repository_dispatch:
   workflow_dispatch:
+    inputs:
+      ssh:
+        description: 'SSH connection to Actions'
+        required: false
+        default: 'false'
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
@@ -77,6 +82,24 @@ jobs:
         chmod +x $DIY_P2_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P2_SH
+
+    - name: SSH connection to Actions
+      uses: P3TERX/ssh2actions@v1.0.0
+      if: github.event.inputs.ssh == 'true'
+
+    - name: Prepare .config from SSH session
+      id: prepconfig
+      if: always()
+      run: |
+        cd openwrt
+        if [ -f .config ]; then
+          echo "Found .config in openwrt/"
+          cp .config ../.config
+        elif [ -f $GITHUB_WORKSPACE/.config ]; then
+          echo "Found .config in workspace"
+        else
+          echo "No .config found, will use default"
+        fi
 
     - name: Download package
       id: package
