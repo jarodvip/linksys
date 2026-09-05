@@ -21,3 +21,7 @@
 grep -qE '^src-git[[:space:]]+helloworld[[:space:]]' feeds.conf.default \
   || echo 'src-git helloworld https://github.com/fw876/helloworld' >>feeds.conf.default
 #echo 'src-git passwall https://github.com/xiaorouji/openwrt-passwall' >>feeds.conf.default
+
+# 注意：luci-app-openclash / luci-app-turboacc / luci-theme-argon 等由 lede 自带的
+# luci feed（coolsnowwolf/luci, openwrt-25.12 分支）提供，已核实存在（2026-09-05）。
+# 不要再额外添加 vernesong/OpenClash feed —— 双源提供同名包会导致 feeds 解析歧义。
