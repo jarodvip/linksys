@@ -121,6 +121,19 @@ jobs:
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "status=success" >> $GITHUB_OUTPUT
 
+    - name: Check firmware size
+      # 原厂 Linksys GUI 有 ~32MiB 上传硬限制。列出全部固件体积，
+      # 超限项打印 WARNING，便于判断下一轮还需瘦身多少。
+      if: steps.organize.outputs.status == 'success' && !cancelled()
+      run: |
+        cd $FIRMWARE
+        ls -lh
+        for f in *; do
+          [ -f "$f" ] || continue
+          [ "$(stat -c%s "$f")" -gt 33554432 ] && \
+            echo "WARNING: $f exceeds the 32 MiB Linksys GUI upload limit"
+        done
+
     - name: Upload firmware directory
       uses: actions/upload-artifact@main
       if: steps.organize.outputs.status == 'success' && !cancelled()
