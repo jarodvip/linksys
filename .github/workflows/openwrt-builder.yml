@@ -130,8 +130,9 @@ jobs:
         ls -lh
         for f in *; do
           [ -f "$f" ] || continue
-          [ "$(stat -c%s "$f")" -gt 33554432 ] && \
+          if [ "$(stat -c%s "$f")" -gt 33554432 ]; then
             echo "WARNING: $f exceeds the 32 MiB Linksys GUI upload limit"
+          fi
         done
 
     - name: Upload firmware directory
