@@ -161,7 +161,12 @@ jobs:
       with:
         tag_name: ${{ steps.tag.outputs.release_tag }}
         body_path: release.txt
-        files: ${{ env.FIRMWARE }}/*
+        # 发布物尽量精简：只保留固件本体（factory/sysupgrade）与校验文件，
+        # 去掉 initramfs-kernel.bin(≈17MB) 与 rootfs.tar.gz(≈19MB)，仍由 artifacts 完整留存。
+        files: |
+          ${{ env.FIRMWARE }}/*squashfs-factory.img
+          ${{ env.FIRMWARE }}/*squashfs-sysupgrade.bin
+          ${{ env.FIRMWARE }}/sha256sums
 
     - name: Delete workflow runs
       uses: Mattraks/delete-workflow-runs@main
